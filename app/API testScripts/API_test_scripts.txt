@@ -1,0 +1,80 @@
+signing in:
+- run: ./signinClient
+
+checking session:
+- run: ./checkSession
+
+signing out:
+- run: ./signoutClient
+
+returning all registered users:
+curl -i -H "Content-Type: application/json" \
+   -X GET -b cookie-jar -k https://cs3103.cs.unb.ca:8024/users
+
+returning user by name:
+curl -i -H "Content-Type: application/json" \
+   -X GET -b cookie-jar -k https://cs3103.cs.unb.ca:8024/users/julia
+
+CASE WHERE USER DOES NOT EXIST:
+curl -i -H "Content-Type: application/json" \
+   -X GET -b cookie-jar -k https://cs3103.cs.unb.ca:8024/users/bob
+
+returning user by ID:
+curl -i -H "Content-Type: application/json" \
+   -X GET -b cookie-jar -k https://cs3103.cs.unb.ca:8024/users/13
+
+CASE WHERE USER DOES NOT EXIST
+curl -i -H "Content-Type: application/json" \
+   -X GET -b cookie-jar -k https://cs3103.cs.unb.ca:8024/users/20
+
+returning all audios:
+curl -i -H "Content-Type: application/json" \
+    -X GET -b cookie-jar -k https://cs3103.cs.unb.ca:8024/audios
+
+retuning certain audio:
+curl -i -H "Content-Type: application/json" \
+    -X GET -b cookie-jar -k https://cs3103.cs.unb.ca:8024/audios/26
+
+CASE WHERE AUDIO DOES NOT EXIST
+curl -i -H "Content-Type: application/json" \
+    -X GET -b cookie-jar -k https://cs3103.cs.unb.ca:8024/audios/20
+
+returning a specified user's audio library
+curl -i -H "Content-Type: application/json" \
+    -X GET -b cookie-jar -k https://cs3103.cs.unb.ca:8024/users/13/audios
+
+CASE WHERE USER DOES NOT EXIST
+curl -i -H "Content-Type: application/json" \
+    -X GET -b cookie-jar -k https://cs3103.cs.unb.ca:8024/users/5/audios
+
+returning an audio from user library:
+curl -i -H "Content-Type: application/json" \
+    -X GET -b cookie-jar -k https://cs3103.cs.unb.ca:8024/users/13/audios/27
+
+CASE WHERE AUDIO DOES NOT EXIST
+curl -i -H "Content-Type: application/json" \
+    -X GET -b cookie-jar -k https://cs3103.cs.unb.ca:8024/users/13/audios/5
+
+updating audio title from user library:
+curl -i -H "Content-Type: application/json" \
+    -X PUT -d '{"audioName": "updated"}' \
+    -b cookie-jar -k https://cs3103.cs.unb.ca:8024/users/13/audios/26
+
+CASE WHERE AUDIO DNE
+curl -i -H "Content-Type: application/json" \
+    -X PUT -d '{"audioName": "updated"}' \
+    -b cookie-jar -k https://cs3103.cs.unb.ca:8024/users/13/audios/5
+
+deleting audio from user library:
+curl -i -H "Content-Type: application/json" \
+    -X DELETE -b cookie-jar -k https://cs3103.cs.unb.ca:8024/users/13/audios/27
+
+CASE WHERE USER DNE
+curl -i -H "Content-Type: application/json" \
+    -X DELETE -b cookie-jar -k https://cs3103.cs.unb.ca:8024/users/5/audios/27
+
+CASE WHERE AUDIO DNE
+curl -i -H "Content-Type: application/json" \
+    -X DELETE -b cookie-jar -k https://cs3103.cs.unb.ca:8024/users/13/audios/5
+
+

@@ -1,0 +1,4 @@
+#!/bin/bash
+curl -i -H "Content-Type: application/json" \
+    -X PUT -d '{"audioName": "updated"}' \
+    -b cookie-jar -k https://cs3103.cs.unb.ca:8024/users/13/audios/26

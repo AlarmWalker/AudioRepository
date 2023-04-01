@@ -1,0 +1,9 @@
+DELIMITER //
+DROP PROCEDURE IF EXISTS getUserById //
+CREATE PROCEDURE getUserById(IN userIdIn INT)
+BEGIN
+  SELECT *
+      FROM users
+      WHERE userId = userIdIn;
+END //
+DELIMITER ;

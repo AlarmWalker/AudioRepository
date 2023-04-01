@@ -1,0 +1,406 @@
+openapi: 3.0.0
+servers:
+  - url: http://cs3103.cs.unb.ca
+info:
+  description: This is an API for managing a list of audios for a audio storing/streaming service
+  version: '1.0'
+  title: Audio API
+  contact:
+    email: 'bkim3@unb.ca'
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+tags:
+  - name: admins
+    description: Operations available to system administrators
+  - name: users
+    description: Operations available to registered users
+security:
+  - cookieAuth: []
+paths:
+  /signin:
+    post:
+      tags:
+        - users
+      summary: logs a user in using LDAP
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Already logged on
+        '201':
+          description: User sucessfully logged on
+        '400':
+          description: Bad request
+        '403':
+          description: Access denied
+      
+    get:
+      tags:
+        - users
+      summary: checks sign in session
+      responses:
+        '200':
+          description: Already logged on
+        '403':
+          description: Not logged in
+          
+    delete:
+      tags:
+        - users
+      summary: logs out a user by deleting cookie session
+      responses:
+        '204':
+          description: successfully logged out
+        '400':
+          description: Bad request
+               
+  /users:
+    get:
+      tags:
+        - admins
+      summary: returns a list of all registered Users
+      operationId: getAllUsers
+      description: returns a list of all User objects
+      responses:
+        '200':
+          description: A list of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+            application/xml:
+              schema:
+                xml:
+                  name: 'users'
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '500':
+          description: server error
+
+  /users/{userId}:
+    get:
+      tags:
+        - admins
+      summary: return a certain User using unique user Id
+      operationId: getUser
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successfully returned a user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+    delete:
+      tags:
+        - admins
+      summary: delete a User
+      operationId: deleteUser
+      description: Delete a User by unique userId
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Successfully deleted a User
+        '404':
+          description: User not found
+
+  /users/{userName}:
+    get:
+      tags:
+        - users
+      summary: get a User by userName
+      operationId: getUserByName
+      description: Returns a User with a matching userName
+      parameters:
+        - in: path
+          name: userName
+          description: username to search for
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User with a matching name was found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':  
+          description: User not found
+      
+  /users/{userId}/audios:
+    get:
+      tags:
+        - users
+      summary: get a a user's audio library based on user ID
+      operationId: getUserAudioLibrary
+      description: returns a list of audios for specific user ID
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A list of Audios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Audio'
+            application/xml:
+              schema:
+                xml:
+                  name: 'audioLib'
+                type: array
+                items:
+                  $ref: '#/components/schemas/Audio'
+        '500':
+          description: server error
+    post:
+      tags:
+        - users
+      summary: add an audio to user's library
+      operationId: addAudio
+      description: adds an audio object into users' audio library/list
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '201':
+          description: audio added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Audio'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Audio'
+        '400':
+          description: invalid input
+        '500':
+          description: server error
+        
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Audio'
+        description: Audio to add
+        
+  /users/{userId}/audios/{audioId}:
+    get:
+      tags:
+        - users
+      summary: get a specific audio from a users' audio library
+      operationId: getUsersAudio
+      description: returns an audio from user's audio library
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: audioId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: an Audio object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Audio'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Audio'
+        '404':
+          description: user or audio not found
+        '500':
+          description: server error
+    delete:
+      tags:
+        - users
+      summary: delete a specific audio from user's library
+      operationId: deleteUsersAudio
+      description: deletes an audio from user's audio library
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: audioId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: audio successfully deleted
+        '404':
+          description: audio not found
+        '500':
+          description: server error
+    
+    put:
+      tags:
+        - users
+      summary: update user's audio file name
+      operationId: updateAudioName
+      description: update audio name
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: audioId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: audioName
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: audio name updated successfully
+        '404':
+          description: audio not found
+        '500':
+          description: server error
+  
+  /audios:
+    get:
+      tags:
+        - admins
+      summary: get a list of all audios
+      operationId: getAllAudio
+      description: returns a list of all audio objects
+      responses:
+        '200':
+          description: A list of Audios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Audio'
+            application/xml:
+              schema:
+                xml:
+                  name: 'audios'
+                type: array
+                items:
+                  $ref: '#/components/schemas/Audio'
+        '500':
+          description: server error
+  
+  /audios/{audioId}:
+    get:
+      tags:
+        - admins
+      summary: return a certain audio from a list of all audios using unique audio Id
+      operationId: getAudioById
+      parameters:
+        - name: audioId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successfully returned an audio
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Audio'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Audio'
+        '404':
+          description: Audio not found
+          
+    delete:
+      tags:
+        - admins
+      summary: delete a specific audio from a list of all audios
+      operationId: deleteAudioById
+      description: Delete a Audio by unique audioId
+      parameters:
+        - name: audioId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Successfully deleted an Audio
+        '404':
+          description: Audio not found
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: cookieJar
+  schemas:
+    User:
+      type: object
+      required:
+        - userName
+      properties:
+        userId:
+          type: integer
+          example: 6
+        userName:
+          type: string
+          example: 'bkim3'
+    Audio:
+      type: object
+      required:
+        - audioName
+        - audioFile
+      properties:
+        audioId:
+          type: integer
+          example: 15
+        audioName:
+          type: string
+          example: 'Harry Potter Audio Book'
+        audioFile:
+          type: string
+          format: binary
