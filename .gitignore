@@ -1,0 +1,5 @@
+# ignore settings
+settings.py
+
+# ignore py sessions
+app/flask_session/
