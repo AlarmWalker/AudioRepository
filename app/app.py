@@ -131,7 +131,7 @@ class SignIn(Resource):
 				finally:
 					cursor.close()
 					dbConnection.close()
-				response = {'status': 'success', 'user_id':result }
+				response = {'status': 'success', 'user_id':result["userId"] }
 				responseCode = 201
 			except LDAPException:
 				response = {'status': 'Access denied'}
@@ -145,8 +145,7 @@ class SignIn(Resource):
 	# GET: Check Cookie data with Session data
 	#
 	# Example curl command:
-	# curl -i -H "Content-Type: application/json" -X GET
-	#	-c cookie-jar -k https://cs3103.cs.unb.ca:8024/signin
+	# curl -i -X GET -b cookie-jar -k https://cs3103.cs.unb.ca:8024/signin
 	def get(self):
 		if 'username' in session:
 			username = session['username']
@@ -161,8 +160,7 @@ class SignIn(Resource):
     # DELETE: Sign out a user
 	#
 	# Example curl command:
-	# curl -i -H "Content-Type: application/json" -X DELETE
-	#	-c cookie-jar -k https://cs3103.cs.unb.ca:8024/signin
+	# curl -i -X DELETE -b cookie-jar -k https://cs3103.cs.unb.ca:8024/signin
 	def delete(self):
 		if 'username' in session:
 			session.pop('username', None)
@@ -178,8 +176,7 @@ class Users(Resource):
     # GET: return all registered users
     #
     # Example curl command:
-    # curl -i -H "Content-Type: application/json" -X GET
-    #	-c cookie-jar -k https://cs3103.cs.unb.ca:8024/users
+    # curl -i -X GET -b cookie-jar -k https://cs3103.cs.unb.ca:8024/users
     def get(self):
         if 'username' in session:
             response = {'status': 'success'}
@@ -187,7 +184,7 @@ class Users(Resource):
         else:
             response = {'status': 'fail', 'message': 'Access Denied'}
             responseCode = 403
-            #return make_response(jsonify(response), responseCode)
+            return make_response(jsonify(response), responseCode)
         try:
             dbConnection = pymysql.connect(
                 settings.DB_HOST,
@@ -216,8 +213,7 @@ class User(Resource):
     # GET: return certain user by Id
     #
     # Example curl command:
-    # curl -i -H "Content-Type: application/json" -X GET
-    #	-c cookie-jar -k https://cs3103.cs.unb.ca:8024/users/<userId>
+    # curl -i -X GET -b cookie-jar -k https://cs3103.cs.unb.ca:8024/users/<userId>
     def get(self, userId):
         if 'username' in session:
             username = session['username']
@@ -226,7 +222,7 @@ class User(Resource):
         else:
             response = {'status': 'fail', 'message': 'Access Denied'}
             responseCode = 403
-            #return make_response(jsonify(response), responseCode)
+            return make_response(jsonify(response), responseCode)
 
         try:
             dbConnection = pymysql.connect(
@@ -253,8 +249,7 @@ class User(Resource):
     # DELETE: delete a user
     #
     # Example curl command:
-    # curl -i -H "Content-Type: application/json" -X DELETE
-    #	-c cookie-jar -k https://cs3103.cs.unb.ca:8024/users/<userId>
+    # curl -i -X DELETE -b cookie-jar -k https://cs3103.cs.unb.ca:8024/users/<userId>
     def delete(self, userId):
         if 'username' in session:
             username = session['username']
@@ -263,7 +258,7 @@ class User(Resource):
         else:
             response = {'status': 'fail', 'message': 'Access Denied'}
             responseCode = 403
-            #return make_response(jsonify(response), responseCode)
+            return make_response(jsonify(response), responseCode)
 
         try:
             dbConnection = pymysql.connect(
@@ -294,17 +289,15 @@ class UserByName(Resource):
     # GET: return certain user by username
     #
     # Example curl command:
-    # curl -i -H "Content-Type: application/json" -X GET
-    #	-c cookie-jar -k https://cs3103.cs.unb.ca:8024/users/<username>
+    # curl -i -X GET -b cookie-jar -k https://cs3103.cs.unb.ca:8024/users/<username>
     def get(self, username):
         if 'username' in session:
-            #username = session['username']
             response = {'status': 'success'}
             responseCode = 200
         else:
             response = {'status': 'fail', 'message': 'Access Denied'}
             responseCode = 403
-            #return make_response(jsonify(response), responseCode)
+            return make_response(jsonify(response), responseCode)
 
         try:
             dbConnection = pymysql.connect(
@@ -334,8 +327,8 @@ class Audios(Resource):
 
     # GET: Return all audios in database
     #
-    # Example request: curl -i -H "Content-Type: application/json" -X GET
-    # -b cookie-jar -k https://cs3103.cs.unb.ca:8024/audios
+    # Example request: 
+    # curl -i -X GET -b cookie-jar -k https://cs3103.cs.unb.ca:8024/audios
     #
     def get(self):
         if 'username' in session:
@@ -345,7 +338,7 @@ class Audios(Resource):
         else:
             response = {'status': 'fail', 'message': 'Access Denied'}
             responseCode = 403
-            #return make_response(jsonify(response), responseCode)
+            return make_response(jsonify(response), responseCode)
 
         try:
             dbConnection = pymysql.connect(
@@ -376,8 +369,8 @@ class Audios(Resource):
 class Audio(Resource):
     # GET: Returns certain audio
     #
-    # Example request: curl -i -H "Content-Type: application/json" -X GET
-    # -b cookie-jar -k https://cs3103.cs.unb.ca:8024/audios/<audioId>
+    # Example request: 
+    # curl -i -X GET -b cookie-jar -k https://cs3103.cs.unb.ca:8024/audios/<audioId>
     #
     def get(self, audioId):
         if 'username' in session:
@@ -387,7 +380,7 @@ class Audio(Resource):
         else:
             response = {'status': 'fail', 'message': 'Access Denied'}
             responseCode = 403
-            #return make_response(jsonify(response), responseCode)
+            return make_response(jsonify(response), responseCode)
 
         try:
             dbConnection = pymysql.connect(
@@ -415,8 +408,8 @@ class UserAudioLibrary(Resource):
 
     # GET: Returns a user's audio library
     #
-    # Example request: curl -i -H "Content-Type: application/json" -X GET
-    # -b cookie-jar -k https://cs3103.cs.unb.ca:8024/users/<userId>/audios
+    # Example request: 
+    # curl -i -X GET -b cookie-jar -k https://cs3103.cs.unb.ca:8024/users/<userId>/audios
     def get(self, userId):
         if 'username' in session:
             username = session['username']
@@ -425,7 +418,7 @@ class UserAudioLibrary(Resource):
         else:
             response = {'status': 'fail', 'message': 'Access Denied'}
             responseCode = 403
-            #return make_response(jsonify(response), responseCode)
+            return make_response(jsonify(response), responseCode)
 
         try:
             dbConnection = pymysql.connect(
@@ -518,7 +511,7 @@ class UserAudio(Resource):
     #
     # Example request: curl -i -H "Content-Type: application/json" -X PUT
     # -d '{"audioName": "changed audio name"}'
-    # -c cookie-jar -k https://cs3103.cs.unb.ca:8024/users/<userId>/audios/<audioId>
+    # -b cookie-jar -k https://cs3103.cs.unb.ca:8024/users/<userId>/audios/<audioId>
     def put(self, userId, audioId):
         if 'username' in session:
             username = session['username']
@@ -527,6 +520,7 @@ class UserAudio(Resource):
         else:
             response = {'status': 'fail'}
             responseCode = 403
+            return make_response(jsonify(response), responseCode)
         if not request.json:
             abort(400)
 
@@ -575,8 +569,8 @@ class UserAudio(Resource):
 
     # GET: Return identified audio resource (audio by ID)
     #
-    # Example request: curl -i -H "Content-Type: application/json" -X GET
-    # -b cookie-jar -k https://cs3103.cs.unb.ca:8024/users/<userId>/audios/<audioId>
+    # Example request: 
+    # curl -i -X GET -b cookie-jar -k https://cs3103.cs.unb.ca:8024/users/<userId>/audios/<audioId>
     #
     def get(self, userId, audioId):
         if 'username' in session:
@@ -586,6 +580,7 @@ class UserAudio(Resource):
         else:
             response = {'status': 'fail'}
             responseCode = 403
+            return make_response(jsonify(response), responseCode)
 
         try:
             dbConnection = pymysql.connect(
@@ -625,8 +620,7 @@ class UserAudio(Resource):
 
     # DELETE: Delete audio from user's library
     #
-    # Example request: curl -i -H "Content-Type: application/json" -X DELETE
-    # -b cookie-jar -k https://cs3103.cs.unb.ca:8024/users/<userId>/audios/<audioId>
+    # Example request: curl -i -X DELETE -b cookie-jar -k https://cs3103.cs.unb.ca:8024/users/<userId>/audios/<audioId>
     def delete(self, userId, audioId):
         if 'username' in session:
             username = session['username']
@@ -635,7 +629,7 @@ class UserAudio(Resource):
         else:
             response = {'status': 'fail', 'message': 'Access Denied'}
             responseCode = 403
-            #return make_response(jsonify(response), responseCode)
+            return make_response(jsonify(response), responseCode)
 
         # Delete audio
         try:
@@ -674,6 +668,15 @@ class UserAudio(Resource):
 
 class FileUpload(Resource):
     def post(self):
+        if 'username' in session:
+            username = session['username']
+            response = {'status': 'success'}
+            responseCode = 200
+        else:
+            response = {'status': 'fail', 'message': 'Access Denied'}
+            responseCode = 403
+            return make_response(jsonify(response), responseCode)
+
         if 'file' not in request.files:
             print('No file part')
             return redirect(request.url)
