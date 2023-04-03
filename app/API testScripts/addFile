@@ -1,0 +1,5 @@
+#!/bin/bash
+curl -i -X POST \
+  -H "Content-Type: multipart/form-data" \
+  -F "file=@example.mp3" \
+  -b cookie-jar -k https://cs3103.cs.unb.ca:8024/FileUpload

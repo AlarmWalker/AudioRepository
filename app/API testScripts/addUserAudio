@@ -1,4 +1,4 @@
 #!/bin/bash
 curl -i -H "Content-Type: application/json" \
     -X POST -d '{"audioName": "video recording", "audioFile": "audios/example.mp3"}' \
-    -b cookie-jar -k https://cs3103.cs.unb.ca:8024/users/13/audios
+    -b cookie-jar -k https://cs3103.cs.unb.ca:8024/users/1/audios

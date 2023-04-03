@@ -14,7 +14,7 @@ from werkzeug import secure_filename
 
 import settings  # Our server and db settings, stored in settings.py
 
-UPLOAD_FOLDER = 'audios'
+UPLOAD_FOLDER = 'audios/'
 ALLOWED_EXTENSIONS = {'wav', 'mp3'}
 
 app = Flask(__name__)
@@ -22,10 +22,13 @@ app.config['SECRET_KEY'] = settings.SECRET_KEY
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SESSION_COOKIE_NAME'] = 'peanutButter'
 app.config['SESSION_COOKIE_DOMAIN'] = settings.APP_HOST
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 Session(app)
 
-
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 ####################################################################################
 #
 # Error handlers
@@ -466,7 +469,7 @@ class UserAudioLibrary(Resource):
         else:
             response = {'status': 'fail', 'message': 'Access Denied'}
             responseCode = 403
-            #return make_response(jsonify(response), responseCode)
+            return make_response(jsonify(response), responseCode)
 
         if not request.json or not 'audioName' or not 'audioFile' in request.json:
             response = {'status': 'fail', 'message': 'Bad Request'}
@@ -669,6 +672,22 @@ class UserAudio(Resource):
             dbConnection.close()
         return make_response(jsonify({"status": "success"}), 204)
 
+class FileUpload(Resource):
+    def post(self):
+        if 'file' not in request.files:
+            print('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        # If the user does not select a file, the browser submits an
+        # empty file without a filename.
+        if file.filename == '':
+            print('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        return make_response(jsonify({"status": "success"}), 201)
+
 
 ####################################################################################
 #
@@ -696,6 +715,9 @@ api.add_resource(Users, '/users')
 api.add_resource(User, '/users/<int:userId>')
 
 api.add_resource(UserByName, '/users/<string:username>')
+
+#file upload
+api.add_resource(FileUpload, '/FileUpload')
 
 if __name__ == "__main__":
 	context = ('cert.pem', 'key.pem')
