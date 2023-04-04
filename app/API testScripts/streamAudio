@@ -1,0 +1,3 @@
+#!/bin/bash
+curl -X GET -H "Content-Type: application/json" \
+    -b cookie-jar -k https://cs3103.cs.unb.ca:8024/audio/1
