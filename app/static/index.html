@@ -14,9 +14,28 @@
         <button class="col-4 btn btn-outline-success" type="button" v-on:click="login()">Login</button>
       </div>
       <div v-else class="text-center">
+        <h2>Hello, {{userData.userName}}</h2>
         <button type="button" class="btn btn-outline-danger" v-on:click="logout()">Logout</button>
+        <button type="button" class="btn btn-outline-success" v-on:click="fetchUserAudioLib()">My Library</button>
       </div>
     </div>
+    <div v-if="authenticated">
+        <div v-if="libraryData != null" id="userLibrary">
+          <ul class="list-group">
+            <div v-for="audio in libraryData">
+              <li class="list-group-item col-7 mx-auto">
+                <div class="d-flex w-100 justify-content-between">
+                  {{audio.audioName}}
+                  <audio controls autoplay>
+                    <source src= {{audio.audioFile}}
+                    type="audio/mpeg"/>
+                  </audio>
+                </div>
+              </li>
+            </div>
+          </ul>
+        </div>
+      </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>

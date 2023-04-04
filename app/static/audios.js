@@ -7,6 +7,8 @@ var app = new Vue({
       authenticated: false,
       loggedIn: null,
       libraryData: null,
+      audioData: null,
+      userData: null,
       input: {
         username: "",
         password: ""
@@ -24,6 +26,7 @@ var app = new Vue({
               if (response.data.status == "success") {
                 this.authenticated = true;
                 this.loggedIn = response.data.user_id;
+                this.getCurrentUser();
                 console.log(this.loggedIn);
               }
           })
@@ -56,7 +59,17 @@ var app = new Vue({
 
         
       },
-  
+      getCurrentUser(){
+        axios
+        .get(this.serviceURL+"/users/" + this.loggedIn)
+        .then(response => {
+          this.userData = response.data.user;
+        })
+        .catch(e => {
+          alert("Unable to load the requested user");
+          console.log(e);
+        });
+      },
       fetchUserAudioLib() {
         axios
         .get(this.serviceURL+"/users/" + this.loggedIn + "/audios")
