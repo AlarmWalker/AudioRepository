@@ -17,6 +17,9 @@
         <h2>Hello, {{userData.userName}}</h2>
         <button type="button" class="btn btn-outline-danger" v-on:click="logout()">Logout</button>
         <button type="button" class="btn btn-outline-success" v-on:click="fetchUserAudioLib()">My Library</button>
+        <div class="btn-group-xs">
+          <button type="button" class="btn btn-outline-primary" v-on:click="showModalAdd()">Add an audio</button>
+        </div>
       </div>
     </div>
     <div v-if="authenticated">
@@ -36,6 +39,36 @@
           </ul>
         </div>
       </div>
+      <div v-if="authenticated">
+        <modal v-if="modalAdd" @close="hideModal">
+          <!--
+            you can use custom content here to overwrite
+            default content
+          -->
+          <div slot="header" class="modal-header">
+            Add an audio here
+          </div>
+          <div slot="body">
+            <div class="form-group col-6">
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text  modal-prepend">Audio Name</span>
+                </div>
+                <input class="col-8 form-control" required type="text" id="audioName" v-model="audioForm.audioName" placeholder="Name of your audio File" />
+              </div>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text modal-prepend">Audio File</span>
+                </div>
+                <input class="col-8 form-control" type="file" id="audioFile" v-model="audioForm.audioFile"/>
+              </div>
+            </div>
+          </div>
+          <div slot="footer">
+              <button type="button" class="btn btn-secondary" v-on:click="addAudio()">Add audio</button>
+              <button type="button" class="btn btn-outline-danger" v-on:click="hideModal()">Close</button>
+          </div>
+        </modal>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>

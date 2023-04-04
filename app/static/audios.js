@@ -3,15 +3,20 @@ var app = new Vue({
   
     //------- data --------
     data: {
-      serviceURL: "https://cs3103.cs.unb.ca:50619",
+      serviceURL: "https://cs3103.cs.unb.ca:8024",
       authenticated: false,
       loggedIn: null,
       libraryData: null,
       audioData: null,
       userData: null,
+      modalAdd: false,
       input: {
         username: "",
         password: ""
+      },
+      audioForm: {
+        audioName: "",
+        audioFile: null
       }
     },
     methods: {
@@ -80,6 +85,44 @@ var app = new Vue({
           alert("Unable to load the audio library");
           console.log(e);
         });
+      },
+      addAudio(){
+        let fileInput = document.getElementById('audioFile');
+        let selectedFile = fileInput.files[0];
+        let fileName = selectedFile.name;
+        if (this.audioForm.audioName !== "" && this.audioForm.audioFile.size !== null) {
+          axios
+          .post(this.serviceURL + "/users/" + this.loggedIn + "/audios", {
+            "audioName": this.audioForm.audioName,
+            "audioFile": "audios/" + fileName
+          })
+          .catch(e => {
+            alert("unable to add the audio file");
+            console.log(e);
+          })
+          axios
+          .post(this.serviceURL + "/FileUpload", this.audioForm.audioFile, {
+            headers: {
+              'Content-Type': 'multipart/formData'
+            }
+          })
+          .then(response => {
+            if (response.data.status == "success"){
+              this.hideModal();
+              alert("Present Added Successfully");
+            }
+          })
+          .catch(e => {
+            alert("unable to add the audio file");
+            console.log(e);
+          })
+        }
+      },
+      showModalAdd() {
+        this.modalAdd = true;
+      },
+      hideModal(){
+        this.modalAdd = false;
       }
   
   

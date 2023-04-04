@@ -447,7 +447,7 @@ class UserAudioLibrary(Resource):
         finally:
             cursor.close()
             dbConnection.close()
-        return make_response(jsonify({"Audio Library": row}), 200)
+        return make_response(jsonify({"library": row}), 200)
 
     # POST: Add an audio to user library
     #
