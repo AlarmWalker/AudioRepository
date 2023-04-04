@@ -9,9 +9,16 @@ var app = new Vue({
       libraryData: null,
       audioData: null,
       userData: null,
+      editModal: false,
       input: {
         username: "",
         password: ""
+      },
+      selectedAudio: {
+        audioFile: "",
+        audioID: "",
+        audioName: "",
+        userID: ""
       }
     },
     methods: {
@@ -70,6 +77,7 @@ var app = new Vue({
           console.log(e);
         });
       },
+
       fetchUserAudioLib() {
         axios
         .get(this.serviceURL+"/users/" + this.loggedIn + "/audios")
@@ -80,6 +88,58 @@ var app = new Vue({
           alert("Unable to load the audio library");
           console.log(e);
         });
+      },
+
+      selectAudio(audioID) {
+        this.showModal();
+        for (x in this.libraryData) {
+          if (this.libraryData[x].audioID == audioID) {
+            this.selectedAudio = this.libraryData[x];
+          }
+        }
+        console.log(this.selectedAudio);
+      },
+
+      updateAudio(audioID) {
+        if (this.selectedAudio.audioName != "") {
+          axios
+          .update(this.serviceURL+"/users/" + this.loggedIn + "/audios/" + audioID, {
+              "audioName": this.selectedAudio.audioName
+          })
+          .then(response => {
+              if (response.data.status == "success") {
+                this.selectedAudio.audioName = "";
+                
+                this.hideModal();
+                alert("Audio Updated Successfully");
+              }
+          })
+          .catch(e => {
+              alert("Unable to update, please try again");
+              console.log(e);
+          });
+        } else {
+          alert("put audio name");
+        }
+      },
+
+      deleteAudio(audioID) {
+        axios
+        .delete(this.serviceURL+"/users/" + this.loggedIn + "/audios/" + audioID)
+        .catch(e => {
+          alert("Unable to delete the audio");
+          console.log(e);
+        });
+        location.reload();
+      },
+
+      showModal() {
+        this.editModal = true;
+      },
+  
+
+      hideModal() {
+        this.editModal = false;
       }
   
   

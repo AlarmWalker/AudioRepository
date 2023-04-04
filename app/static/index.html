@@ -25,17 +25,41 @@
             <div v-for="audio in libraryData">
               <li class="list-group-item col-7 mx-auto">
                 <div class="d-flex w-100 justify-content-between">
-                  {{audio.audioName}}
-                  <audio controls autoplay>
-                    <source src= {{audio.audioFile}}
-                    type="audio/mpeg"/>
-                  </audio>
+                  {{audio.audioName}}<br>{{audio.audioID}}
+                  
+                  <div class="btn-group-xs">
+                    <button class="utilityBtn text-success" v-on:click="selectAudio(audio.audioID)">✎</button>
+                    <button class="utilityBtn text-danger" v-on:click="deleteAudio(audio.audioID)">x</button>
+                  </div>
                 </div>
               </li>
             </div>
           </ul>
         </div>
       </div>
+      <modal v-if="editModal" @close="hideModal">
+        <!--
+          you can use custom content here to overwrite
+          default content
+        -->
+        <div slot="header" class="modal-header">
+          Update a present's info: (* Denotes required field)
+        </div>
+        <div slot="body">
+          <div class="form-group col-6">
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text  modal-prepend">Present *</span>
+              </div>
+              <input class="col-8 form-control" required type="text" id="audioName" v-model="audioNameField" filled={{selectedAudio.audioName}} />
+            </div>
+          </div>
+        </div>
+        <div slot="footer">
+            <button type="button" class="btn btn-secondary" v-on:click="updateAudio(selectedAudio.audioID)">Update audio name</button>
+            <button type="button" class="btn btn-outline-danger" v-on:click="hideModal()">Close</button>
+        </div>
+      </modal>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
