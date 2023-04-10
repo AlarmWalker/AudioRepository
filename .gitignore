@@ -3,3 +3,6 @@ settings.py
 
 # ignore py sessions
 app/flask_session/
+
+# ignore any added audio files
+app/audios/

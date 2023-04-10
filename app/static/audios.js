@@ -90,6 +90,11 @@ var app = new Vue({
         let fileInput = document.getElementById('audioFile');
         let selectedFile = fileInput.files[0];
         let fileName = selectedFile.name;
+        const audioFile = document.getElementById('audioFile').files[0];
+        const audioName = document.getElementById('audioName').value;
+        const formData = new FormData();
+        formData.append('file', audioFile);
+        formData.append('audioName', audioName);
         if (this.audioForm.audioName !== "" && this.audioForm.audioFile.size !== null) {
           axios
           .post(this.serviceURL + "/users/" + this.loggedIn + "/audios", {
@@ -100,22 +105,17 @@ var app = new Vue({
             alert("unable to add the audio file");
             console.log(e);
           })
-          axios
-          .post(this.serviceURL + "/FileUpload", this.audioForm.audioFile, {
-            headers: {
-              'Content-Type': 'multipart/formData'
-            }
-          })
+          axios.post('/FileUpload', formData)
           .then(response => {
-            if (response.data.status == "success"){
-              this.hideModal();
-              alert("Present Added Successfully");
+            if (response.data.status === 'success') {
+              this.modalAdd=false;
+              alert('Audio added successfully');
             }
           })
-          .catch(e => {
-            alert("unable to add the audio file");
-            console.log(e);
-          })
+          .catch(error => {
+            console.error(error);
+            alert('Unable to add audio');
+          });
         }
       },
       showModalAdd() {
