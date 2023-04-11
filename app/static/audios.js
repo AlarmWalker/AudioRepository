@@ -99,7 +99,7 @@ var app = new Vue({
           axios
           .post(this.serviceURL + "/users/" + this.loggedIn + "/audios", {
             "audioName": this.audioForm.audioName,
-            "audioFile": "audios/" + fileName
+            "audioFile": fileName
           })
           .catch(e => {
             alert("unable to add the audio file");

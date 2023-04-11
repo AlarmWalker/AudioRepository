@@ -6,3 +6,6 @@ app/flask_session/
 
 # ignore any added audio files
 app/audios/
+
+# ignore any changes to cookie
+app/API testScripts/cookie-jar

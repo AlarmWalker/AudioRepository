@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import os
 import sys
-from flask import Flask, jsonify, abort, request, make_response, session, flash, redirect, url_for, send_file
+from flask import Flask, jsonify, abort, request, make_response, session, flash, redirect, send_from_directory
 from flask_restful import reqparse, Resource, Api
 from flask_session import Session
 import json
@@ -692,43 +692,11 @@ class FileUpload(Resource):
         return make_response(jsonify({"status": "success"}), 201)
 
 class StreamAudio(Resource):
-    def get(self, audioId):
-        if 'username' in session:
-            username = session['username']
-            response = {'status': 'success'}
-            responseCode = 200
-        else:
-            response = {'status': 'fail', 'message': 'Access Denied'}
-            responseCode = 403
-            return make_response(jsonify(response), responseCode)
-
-        # retrieve the filename from the database using the audioId
+    def get(self, audioFileName):
         try:
-            dbConnection = pymysql.connect(
-                settings.DB_HOST,
-                settings.DB_USER,
-                settings.DB_PASSWD,
-                settings.DB_DATABASE,
-                charset='utf8mb4',
-                cursorclass=pymysql.cursors.DictCursor)
-            sql = 'getAudioById'
-            sqlArgs = (audioId,)
-            cursor = dbConnection.cursor()
-            cursor.callproc(sql, sqlArgs)
-            row = cursor.fetchone()
-            if row is None:
-                abort(404)
-            audioFile = row['audioFile']
-        except:
-            abort(500)
-        finally:
-            cursor.close()
-            dbConnection.close()
-
-        mimetype = 'audio/mp3'  # replace with the actual mimetype of your audio file
-
-        # stream the file to the client
-        return send_file(audioFile, mimetype=mimetype, as_attachment=False)
+            return send_from_directory(app.config['UPLOAD_FOLDER'], filename=audioFileName, as_attachment=False)
+        except FileNotFoundError:
+            abort(404)
 
 
 ####################################################################################
@@ -762,7 +730,7 @@ api.add_resource(UserByName, '/users/<string:username>')
 api.add_resource(FileUpload, '/FileUpload')
 
 #audio stream
-api.add_resource(StreamAudio, '/audio/<int:audioId>')
+api.add_resource(StreamAudio, '/audio/<string:audioFileName>')
 
 if __name__ == "__main__":
 	context = ('cert.pem', 'key.pem')

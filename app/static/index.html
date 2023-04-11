@@ -30,7 +30,7 @@
                 <div class="d-flex w-100 justify-content-between">
                   {{audio.audioName}}
                   <audio controls autoplay>
-                    <source src= {{audio.audioFile}}
+                    <source :src="'/audio/' + audio.audioFile" type="audio/mpeg" />
                     type="audio/mpeg"/>
                   </audio>
                 </div>
@@ -41,7 +41,6 @@
       </div>
       <div v-if="authenticated">
         <modal v-if="modalAdd" @close="hideModal">
-          -->
           <div slot="header" class="modal-header">
             Add an audio here
           </div>
