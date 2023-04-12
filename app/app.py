@@ -200,7 +200,7 @@ class Users(Resource):
             if result is None:
                 abort(404)
             else:
-                response = {"Users": result}
+                response = {"status": "success", "users": result}
         except:
             abort(500)
         finally:
@@ -315,7 +315,7 @@ class UserByName(Resource):
             if row is None:
                 return make_response(jsonify({"message": "user does not exist"}), 404)
             else:
-                response = {"Users": row}
+                response = {"user_id": row["userID"]}
         except:
             abort(500)
         finally:
@@ -447,7 +447,7 @@ class UserAudioLibrary(Resource):
         finally:
             cursor.close()
             dbConnection.close()
-        return make_response(jsonify({"Audio Library": row}), 200)
+        return make_response(jsonify({"library": row}), 200)
 
     # POST: Add an audio to user library
     #

@@ -17,9 +17,11 @@
         <h2>Hello, {{userData.userName}}</h2>
         <button type="button" class="btn btn-outline-danger" v-on:click="logout()">Logout</button>
         <button type="button" class="btn btn-outline-success" v-on:click="fetchUserAudioLib()">My Library</button>
+        <button type="button" class="btn btn-outline-success" v-on:click="getUsers()">Search Users</button>
       </div>
     </div>
-    <div v-if="authenticated">
+    
+    <div v-if="authenticated && currentDisplay == 'libraryScreen'">
         <div v-if="libraryData != null" id="userLibrary">
           <ul class="list-group">
             <div v-for="audio in libraryData">
@@ -37,21 +39,35 @@
           </ul>
         </div>
       </div>
+      
+      <div v-if="authenticated && currentDisplay == 'searchUserScreen'">
+        <div v-if="allUsersData != null" id="userList">
+          <ul class="list-group">
+            <div v-for="user in allUsersData">
+              <li class="list-group-item col-7 mx-auto">
+                <div class="d-flex w-100 justify-content-between">
+                  {{user.userID}}<br>{{user.userName}}
+                </div>
+              </li>
+            </div>
+          </ul>
+        </div>
+      </div>
       <modal v-if="editModal" @close="hideModal">
         <!--
           you can use custom content here to overwrite
           default content
         -->
         <div slot="header" class="modal-header">
-          Update a present's info: (* Denotes required field)
+          <p>Update audio name: (* required field)</p>
         </div>
         <div slot="body">
           <div class="form-group col-6">
             <div class="input-group mb-3">
               <div class="input-group-prepend">
-                <span class="input-group-text  modal-prepend">Present *</span>
+                <span class="input-group-text  modal-prepend">new audio name *</span>
               </div>
-              <input class="col-8 form-control" required type="text" id="audioName" v-model="audioNameField" filled={{selectedAudio.audioName}} />
+              <input class="col-8 form-control" required type="text" id="audioName" v-model="updatedAudioName" filled="selectedAudio.audioName" />
             </div>
           </div>
         </div>
@@ -60,6 +76,36 @@
             <button type="button" class="btn btn-outline-danger" v-on:click="hideModal()">Close</button>
         </div>
       </modal>
+      <!-- template for the modal component -->
+    <script type="text/x-template" id="modal-template">
+      <transition name="modal">
+        <div class="modal-backdrop">
+        <div class="modal">
+          <header class="modal-header">
+            <slot name="header">
+              This is the default tile!
+              <button type="button" class="btn-close" @click="hideModal()">
+                x
+              </button>
+            </slot>
+          </header>
+          <section class="modal-body">
+            <slot name="body">
+              I'm the default body!
+            </slot>
+           </section>
+           <footer class="modal-footer">
+              <slot name="footer">
+                I'm the default footer!
+                <button type="button" class="btn-green" @click="hideModal()">
+                  Close me!
+                </button>
+              </slot>
+            </footer>
+          </div>
+        </div>
+      </transition>
+    </script>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>

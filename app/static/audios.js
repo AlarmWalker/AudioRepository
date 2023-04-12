@@ -1,3 +1,6 @@
+Vue.component("modal", {
+  template: "#modal-template"
+});
 var app = new Vue({
     el: "#app",
   
@@ -9,7 +12,10 @@ var app = new Vue({
       libraryData: null,
       audioData: null,
       userData: null,
+      allUsersData: null,
       editModal: false,
+      updatedAudioName: "",
+      currentDisplay: "",
       input: {
         username: "",
         password: ""
@@ -34,7 +40,6 @@ var app = new Vue({
                 this.authenticated = true;
                 this.loggedIn = response.data.user_id;
                 this.getCurrentUser();
-                console.log(this.loggedIn);
               }
           })
           .catch(e => {
@@ -83,6 +88,7 @@ var app = new Vue({
         .get(this.serviceURL+"/users/" + this.loggedIn + "/audios")
         .then(response => {
             this.libraryData = response.data.library;
+            this.currentDisplay = "libraryScreen";
         })
         .catch(e => {
           alert("Unable to load the audio library");
@@ -101,36 +107,57 @@ var app = new Vue({
       },
 
       updateAudio(audioID) {
-        if (this.selectedAudio.audioName != "") {
+        console.log(this.updatedAudioName);
+        if (this.updatedAudioName != "") {
           axios
-          .update(this.serviceURL+"/users/" + this.loggedIn + "/audios/" + audioID, {
-              "audioName": this.selectedAudio.audioName
+          .put(this.serviceURL+"/users/" + this.loggedIn + "/audios/" + audioID, {
+              "audioName": this.updatedAudioName
           })
           .then(response => {
               if (response.data.status == "success") {
-                this.selectedAudio.audioName = "";
+                this.updatedAudioName = "";
                 
                 this.hideModal();
                 alert("Audio Updated Successfully");
+                this.fetchUserAudioLib();
               }
           })
           .catch(e => {
-              alert("Unable to update, please try again");
+              alert("New audio name should not be the same as current audio name. Please try again");
               console.log(e);
           });
         } else {
-          alert("put audio name");
+          alert("audio name field can't be blank");
         }
       },
 
       deleteAudio(audioID) {
         axios
         .delete(this.serviceURL+"/users/" + this.loggedIn + "/audios/" + audioID)
+        .then(response => {
+          console.log(response.data.status);
+            alert("Audio deleted Successfully");
+            this.fetchUserAudioLib();
+        })
         .catch(e => {
-          alert("Unable to delete the audio");
           console.log(e);
+          alert("Unable to delete the audio");
         });
-        location.reload();
+      },
+
+      getUsers(){
+        axios
+        .get(this.serviceURL+"/users")
+        .then(response => {
+          if (response.data.status == "success") {
+              this.allUsersData = response.data.users;
+              this.currentDisplay = "searchUserScreen";
+            }
+        })
+        .catch(e=>{
+          console.log(e);
+          alert("unable to display users");
+        });
       },
 
       showModal() {
