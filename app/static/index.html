@@ -38,12 +38,81 @@
                     <source :src="'/audio/' + audio.audioFile" type="audio/mpeg" />
                     type="audio/mpeg"/>
                   </audio>
+                  <div class="btn-group-xs">
+                    <button class="utilityBtn text-success" v-on:click="selectAudio(audio.audioID)">✎</button>
+                    <button class="utilityBtn text-danger" v-on:click="deleteAudio(audio.audioID)">x</button>
+                  </div>
                 </div>
               </li>
             </div>
           </ul>
         </div>
       </div>
+      <div v-if="authenticated && currentDisplay == 'searchUserScreen'">
+        <div v-if="allUsersData != null" id="userList">
+          <ul class="list-group">
+            <div v-for="user in allUsersData">
+              <li class="list-group-item col-7 mx-auto">
+                <div class="d-flex w-100 justify-content-between">
+                  {{user.userID}}<br>{{user.userName}}
+                </div>
+              </li>
+            </div>
+          </ul>
+        </div>
+      </div>
+      <modal v-if="editModal" @close="hideEditModal">
+        <!--
+          you can use custom content here to overwrite
+          default content
+        -->
+        <div slot="header" class="modal-header">
+          <p>Update audio name: (* required field)</p>
+        </div>
+        <div slot="body">
+          <div class="form-group col-6">
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text  modal-prepend">new audio name *</span>
+              </div>
+              <input class="col-8 form-control" required type="text" id="audioName" v-model="updatedAudioName" filled="selectedAudio.audioName" />
+            </div>
+          </div>
+        </div>
+        <div slot="footer">
+            <button type="button" class="btn btn-secondary" v-on:click="updateAudio(selectedAudio.audioID)">Update audio name</button>
+            <button type="button" class="btn btn-outline-danger" v-on:click="hideEditModal()">Close</button>
+        </div>
+      </modal>
+      <script type="text/x-template" id="modal-template">
+        <transition name="modal">
+          <div class="modal-backdrop">
+          <div class="modal">
+            <header class="modal-header">
+              <slot name="header">
+                This is the default tile!
+                <button type="button" class="btn-close" @click="hideEditModal()">
+                  x
+                </button>
+              </slot>
+            </header>
+            <section class="modal-body">
+              <slot name="body">
+                I'm the default body!
+              </slot>
+             </section>
+             <footer class="modal-footer">
+                <slot name="footer">
+                  I'm the default footer!
+                  <button type="button" class="btn-green" @click="hideEditModal()">
+                    Close me!
+                  </button>
+                </slot>
+              </footer>
+            </div>
+          </div>
+        </transition>
+      </script>
       <div v-if="authenticated">
         <modal v-if="modalAdd" @close="hideModal">
           <div slot="header" class="modal-header">

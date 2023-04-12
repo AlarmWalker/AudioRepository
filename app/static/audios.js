@@ -1,3 +1,4 @@
+
 var app = new Vue({
     el: "#app",
   
@@ -8,6 +9,10 @@ var app = new Vue({
       loggedIn: null,
       libraryData: null,
       audioData: null,
+      allUsersData: null,
+      editModal: false,
+      updatedAudioName: "",
+      currentDisplay: "",
       userData: null,
       modalAdd: false,
       input: {
@@ -17,6 +22,12 @@ var app = new Vue({
       audioForm: {
         audioName: "",
         audioFile: null
+      },
+      selectedAudio: {
+        audioFile: "",
+        audioID: "",
+        audioName: "",
+        userID: ""
       }
     },
     methods: {
@@ -138,11 +149,84 @@ var app = new Vue({
           });
         }
       },
+      selectAudio(audioID) {
+        this.showEditModal();
+        for (x in this.libraryData) {
+          if (this.libraryData[x].audioID == audioID) {
+            this.selectedAudio = this.libraryData[x];
+          }
+        }
+        console.log(this.selectedAudio);
+      },
+
+      updateAudio(audioID) {
+        console.log(this.updatedAudioName);
+        if (this.updatedAudioName != "") {
+          axios
+          .put(this.serviceURL+"/users/" + this.loggedIn + "/audios/" + audioID, {
+              "audioName": this.updatedAudioName
+          })
+          .then(response => {
+              if (response.data.status == "success") {
+                this.updatedAudioName = "";
+                
+                this.hideEditModal();
+                alert("Audio Updated Successfully");
+                this.fetchUserAudioLib();
+              }
+          })
+          .catch(e => {
+              alert("New audio name should not be the same as current audio name. Please try again");
+              console.log(e);
+          });
+        } else {
+          alert("audio name field can't be blank");
+        }
+      },
+
+      deleteAudio(audioID) {
+        axios
+        .delete(this.serviceURL+"/users/" + this.loggedIn + "/audios/" + audioID)
+        .then(response => {
+          console.log(response.data.status);
+            alert("Audio deleted Successfully");
+            this.fetchUserAudioLib();
+        })
+        .catch(e => {
+          console.log(e);
+          alert("Unable to delete the audio");
+        });
+      },
+
+      getUsers(){
+        axios
+        .get(this.serviceURL+"/users")
+        .then(response => {
+          if (response.data.status == "success") {
+              this.allUsersData = response.data.users;
+              this.currentDisplay = "searchUserScreen";
+            }
+        })
+        .catch(e=>{
+          console.log(e);
+          alert("unable to display users");
+        });
+      },
+
       showModalAdd() {
         this.modalAdd = true;
       },
+
       hideModal(){
         this.modalAdd = false;
+      },
+
+      showEditModal() {
+        this.editModal = true;
+      },
+
+      hideEditModal() {
+        this.editModal = false;
       }
   
   
