@@ -20,6 +20,11 @@
         <div class="btn-group-xs">
           <button type="button" class="btn btn-outline-primary" v-on:click="showModalAdd()">Add an audio</button>
         </div>
+        <div class="input-container">
+          <label for="username">Username:</label>
+          <input type="text" id="username" name="username" placeholder="Enter username">
+          <button v-on:click="getUserAudioLibrary()">Get User's Audio Library</button>
+        </div>        
       </div>
     </div>
     <div v-if="authenticated">
@@ -42,7 +47,7 @@
       <div v-if="authenticated">
         <modal v-if="modalAdd" @close="hideModal">
           <div slot="header" class="modal-header">
-            Add an audio here
+            Add an audio here(mp3, wav)
           </div>
           <div slot="body">
             <div class="form-group col-6">

@@ -86,6 +86,26 @@ var app = new Vue({
           console.log(e);
         });
       },
+      getUserAudioLibrary() {
+        const username = document.getElementById("username").value;
+        axios.get(`/users/${username}`)
+        .then(response => {
+            const UserId = response.data.Users.userID;
+            axios.get(`${this.serviceURL}/users/${UserId}/audios`)
+            .then(response => {
+              this.libraryData = response.data.library;
+            })
+            .catch(e => {
+              alert("Unable to load the audio library");
+              console.log(e);
+            });
+        })
+        .catch(e => {
+          alert("Unable to load the user");
+          console.log(e);
+        });
+      }
+      ,
       addAudio(){
         let fileInput = document.getElementById('audioFile');
         let selectedFile = fileInput.files[0];
